@@ -7,16 +7,16 @@ from client.utils import singleton
 
 
 @singleton.Singleton
-class Configuration():
+class Configuration(subsystem.Subsystem):
 
     def __init__(self):
         super().__init__()
         self.lock = threading.Lock
 
-        self.resolution = self.scrW, self.scrH = 1920, 1080
+        self.resolution = self.scrW, self.scrH = 2560, 1440
         self.screen_type = pygame.constants.FULLSCREEN
         self.caption = self.game_title = 'NewGame'
-        self.install_directory = "C:/Users/rich/pyrge/client"
+        self.install_path = "C:/Users/rich/pyrge/client"
         self.tick_rate = 10
         self.max_fps = 144
         self.layers = ['far_background',

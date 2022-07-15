@@ -7,6 +7,11 @@ import pygame
 
 @singleton.Singleton
 class Renderer(subsystem.Subsystem):
+    """
+    I guess technically this is the window manager, as opposed to a renderer.
+    Manages the layers for rendering and prepares the scene for display.
+    Forwards on the events for the window, key and mouse presses, and shutdown messages.
+    """
     def __init__(self):
         super().__init__()
 
@@ -17,6 +22,8 @@ class Renderer(subsystem.Subsystem):
         self.screen = None
         self.layers = {}
         self.active = True
+        self.create_layers()
+        self.create_screen()
         self.worker.start()
 
     def create_screen(self):
@@ -24,13 +31,13 @@ class Renderer(subsystem.Subsystem):
         screen_type = configuration.Configuration.instance().screen_type
         caption = configuration.Configuration.instance().caption
         icon = resource.Resource.instance().icon
-        self.tick_rate = configuration.Configuration.instance.max_fps
-        self.clock = pygame.Clock
+        self.tick_rate = configuration.Configuration.instance().max_fps
+        self.clock = pygame.time.Clock()
         self.display.set_caption(caption)
         self.display.set_icon(icon)
         self.screen = self.display.set_mode(size=resolution, flags= screen_type | pygame.HWSURFACE | pygame.GL_DOUBLEBUFFER | pygame.HWACCEL )
 
-    def create_layers(self) -> dict:
+    def create_layers(self):
         lyrs = configuration.Configuration.instance().layers
         for lyr in lyrs:
             self.layers[lyr] = layer.Layer(name=lyr)
@@ -63,7 +70,7 @@ class Renderer(subsystem.Subsystem):
             update['mouse_press'] = pygame.mouse.get_pressed()
             update['keys'] = keys
             update['events'] = events
-            state.State.instance().put({'render_target': update})
+            state.State.instance().queue.put({'render_target': update})
 
             for name, lyr in self.layers.items():
                 while lyr.queue.qsize() != 0:

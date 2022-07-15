@@ -10,9 +10,8 @@ class State(subsystem.Subsystem):
         self.clock = None
         # todo Need to abstract out different ticks, so we can schedule different things at different times.
 
-
     def on_active(self):
-        self.clock = pygame.Clock
+        #self.clock = pygame.Clock
         self.active = True
 
     def do_work(self):
